@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOCUS Atlas – Configurator</title>
+<style>
+:root{--ink:#111;--mut:#666;--line:#e3e3e3;--acc:#e30613}
+*{box-sizing:border-box}body{margin:0;font-family:Helvetica,Arial,sans-serif;color:var(--ink);background:#f6f6f6}
+header{background:#111;color:#fff;padding:16px 32px;font-weight:800;letter-spacing:.2em}
+main{max-width:1200px;margin:0 auto;padding:32px;display:grid;grid-template-columns:1.3fr 1fr;gap:40px}
+@media(max-width:860px){main{grid-template-columns:1fr;padding:16px}}
+.stage{background:#fff;border-radius:12px;padding:24px;position:sticky;top:16px;align-self:start}
+.stage svg{width:100%;height:auto}
+h1{margin:0 0 4px;font-size:32px}.sub{color:var(--mut);margin:0 0 24px}
+h3{margin:24px 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opt{border:2px solid var(--line);background:#fff;border-radius:8px;padding:10px 14px;cursor:pointer;font:inherit;text-align:left}
+.opt.on{border-color:var(--ink)}.opt small{display:block;color:var(--mut)}
+.sw{width:44px;height:44px;border-radius:50%;padding:0;border:3px solid #fff;box-shadow:0 0 0 2px var(--line)}
+.sw.on{box-shadow:0 0 0 2px var(--ink)}
+.total{margin-top:32px;background:#fff;border-radius:12px;padding:20px;display:flex;justify-content:space-between;align-items:center}
+.price{font-size:28px;font-weight:800}.cta{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:14px 24px;font-weight:700;cursor:pointer;font-size:16px}
+ul{padding-left:18px;color:var(--mut)}
+</style></head><body>
+<header>FOCUS</header>
+<main>
+<div class="stage">
+<svg viewBox="0 0 600 340" id="bike">
+<circle cx="130" cy="230" r="85" fill="none" stroke="#222" stroke-width="10"/><circle cx="470" cy="230" r="85" fill="none" stroke="#222" stroke-width="10"/>
+<g id="frame" stroke-width="12" stroke-linecap="round" fill="none"><path d="M130 230 L240 230 L300 120 L420 120 L240 230 M300 120 L270 100 M420 120 L470 230 M420 120 L400 90 M240 230 L190 120 L300 120"/></g>
+<path d="M190 120 L185 100 M175 100 L215 100 M400 90 L430 84 M400 90 L385 82" stroke="#222" stroke-width="7" fill="none" stroke-linecap="round"/>
+<circle cx="240" cy="230" r="14" fill="#555"/>
+<text x="300" y="325" text-anchor="middle" font-size="14" fill="#666" id="cap"></text>
+</svg></div>
+<div>
+<h1>ATLAS</h1><p class="sub">Gravel bike configurator</p>
+<h3>Color</h3><div class="opts" id="color"></div>
+<h3>Groupset</h3><div class="opts" id="group"></div>
+<h3>Wheels</h3><div class="opts" id="wheels"></div>
+<h3>Size</h3><div class="opts" id="size"></div>
+<h3>Your configuration</h3><ul id="sum"></ul>
+<div class="total"><div><small>Total</small><div class="price" id="price"></div></div><button class="cta" onclick="alert('Added to cart: '+document.getElementById('sum').innerText.replace(/\n/g,', '))">Add to cart</button></div>
+</div></main>
+<script>
+const D={
+color:[{n:"Stealth Black",c:"#1b1b1b",p:0},{n:"Focus Red",c:"#e30613",p:0},{n:"Forest Green",c:"#2f5d46",p:0},{n:"Sand",c:"#c9b58b",p:150}],
+group:[{n:"Shimano GRX 600",d:"2x11",p:0},{n:"Shimano GRX 810",d:"1x11",p:700},{n:"SRAM Rival AXS",d:"1x12 wireless",p:1300}],
+wheels:[{n:"Alloy",d:"Aluminium, 1900 g",p:0},{n:"Carbon",d:"Carbon, 1500 g",p:1400}],
+size:[{n:"S"},{n:"M"},{n:"L"},{n:"XL"}]};
+const S={color:0,group:0,wheels:0,size:1},BASE=2499;
+function render(){
+for(const k in D){const el=document.getElementById(k);el.innerHTML="";
+D[k].forEach((o,i)=>{const b=document.createElement("button");b.className=(k=="color"?"opt sw ":"opt ")+(S[k]==i?"on":"");
+if(k=="color"){b.style.background=o.c;b.title=o.n}else b.innerHTML=o.n+(o.d?`<small>${o.d}</small>`:"")+(o.p?`<small>+€${o.p}</small>`:"");
+b.onclick=()=>{S[k]=i;render()};el.appendChild(b)})}
+document.getElementById("frame").setAttribute("stroke",D.color[S.color].c);
+let t=BASE;for(const k of["color","group","wheels"])t+=D[k][S[k]].p;
+document.getElementById("price").textContent="€"+t.toLocaleString("en-US");
+document.getElementById("cap").textContent=D.color[S.color].n;
+document.getElementById("sum").innerHTML=["color","group","wheels","size"].map(k=>`<li>${D[k][S[k]].n}</li>`).join("")}
+render();
+</script></body></html>
